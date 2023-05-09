@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.senai.sp.jandira.rickandmorty.model.CharacterList
 import br.senai.sp.jandira.rickandmorty.model.Info
+import br.senai.sp.jandira.rickandmorty.model.origin
 import br.senai.sp.jandira.rickandmorty.service.CharacterService
 import br.senai.sp.jandira.rickandmorty.service.retrofitFactory
 import br.senai.sp.jandira.rickandmorty.ui.theme.RickAndMortyTheme
@@ -54,10 +55,13 @@ fun Greeting(name: String) {
     var info by remember {
         mutableStateOf(Info())
     }
+
+
+   
     Column(modifier = Modifier.padding(16.dp)) {
         Button(onClick = {
             //Cria uma chamada para o endpoint
-            val call = retrofitFactory().getCharacterService().getCharactersByPage(42)
+            val call = retrofitFactory().getCharacterService().getCharacterByNameAndStatus("rick", "dead")
 
             //Executar a chamada
             call.enqueue(object : Callback<CharacterList>{
@@ -68,6 +72,8 @@ fun Greeting(name: String) {
                     listCharacter = response.body()!!.results
 
                     info = response.body()!!.info
+                    
+
 
                 }
 
@@ -80,7 +86,7 @@ fun Greeting(name: String) {
             Text(text = "Listar personagens")
         }
         Row() {
-            Text(
+           Text(
                 text = "Count",
                 modifier = Modifier.size(width = 60.dp, height = 20.dp)
             )
@@ -101,13 +107,14 @@ fun Greeting(name: String) {
                 modifier = Modifier.size(width = 40.dp, height = 20.dp),
                 textAlign = TextAlign.End
                 )
+
         }
 
         LazyColumn(){
             items(listCharacter){
                 Card(modifier = Modifier
                     .fillMaxWidth()
-                    .padding( vertical = 4.dp)
+                    .padding(vertical = 4.dp)
                     ,backgroundColor = Color.Green) {
                     Row(modifier = Modifier.padding(8.dp)) {
                         AsyncImage(model = it.image, contentDescription = null, modifier = Modifier.clip(shape = CircleShape) )
@@ -118,6 +125,8 @@ fun Greeting(name: String) {
                                 fontWeight = FontWeight.Bold
                             )
                             Text(text = it.species)
+                            Text(text = it.origin.name)
+
 
                         }
                     }
